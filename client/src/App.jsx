@@ -30,7 +30,6 @@ class App extends Component {
   }
 
   newMessage(message) {
-    console.log("this", this);
     const messages = this.state.messages.concat(message)
     this.setState({messages: messages})
   }
