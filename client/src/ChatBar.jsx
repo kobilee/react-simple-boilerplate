@@ -1,21 +1,23 @@
 import React, {Component} from 'react';
-import { generateRandomId } from "./utils";
 
 class ChatBar extends Component {
-  _enter = e => {
+  _sendChat = e => {
     if(e.key === "Enter"){
       const newMessage = {
-        id: generateRandomId(),
         type: "incomingMessage",
         username: this.props.User,
         content: e.target.value
       };
-      this.props.sendMessage(newMessage);
+      this.props.getMessage(newMessage);
       e.target.value = "";
     }
   };
 
-
+  _updateUser = e => {
+    if(e.key === "Enter"){
+      this.props.getUser(e.target.value);
+    }
+  }
 
   render() {
     return (
@@ -24,11 +26,12 @@ class ChatBar extends Component {
           className="chatbar-username"
           placeholder="Your Name (Optional)"
           defaultValue={this.props.User}
+          onKeyPress={this._updateUser}
         />
         <input
           className="chatbar-message"
           placeholder="Type a message and hit ENTER"
-          onKeyPress={this._enter}
+          onKeyPress={this._sendChat}
         />
       </footer>
     );
