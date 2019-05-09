@@ -7,56 +7,72 @@ import Nav from "./Nav.jsx";
 class App extends Component {
   constructor(props){
     super(props);
-    this.newUser = this.newUser.bind(this);
-    this.newMessage = this.newMessage.bind(this);
+    this.sendToServer = this.sendToServer.bind(this);
+    this.submitMessage = this.submitMessage.bind(this);
+    this.submitNewUser = this.submitNewUser.bind(this);
     this.state = {
-      currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: []
+      currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
+      messages: [],
+      usersLoggedIn: 0,
+
     };
   }
 
-  newMessage(msg) {
-    this.socket.send(JSON.stringify(msg));
 
-
+  //send a message object to the server
+  sendToServer(obj) {
+    this.socket.send(JSON.stringify(obj));
   }
 
-  newUser(user) {
-      //const messages = this.state.messages.concat(message)
-      this.setState({currentUser: {name: user}});
-
-
+  //assemble a message object, call sendtoServer to send message to server
+  submitMessage(message) {
+    let new_obj = {username: this.state.currentUser.name, content: message, color: this.state.color};
+    this.sendToServer(new_obj);
   }
+
+  //update state to reflect a username change
+  submitNewUser(user, callback) {
+    let new_user_update = {"content": `${this.state.currentUser.name} has changed their name to ${user}.`};
+    this.setState({currentUser: {name: user}}, callback);
+    this.sendToServer(new_user_update);
+  }
+
 
   componentDidMount() {
     console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://localhost:3001/");
 
     this.socket.onmessage = (event) => {
-      console.log(JSON.parse(event.data));
-      const message = JSON.parse(event.data);
-      const messages = this.state.messages.concat(message)
-      this.setState({messages: messages})
-    }
+      const data = JSON.parse(event.data);
+      switch(data.type) {
+        case "incomingMessage":
+
+        case "incomingNotification":
+
+          let messages = this.state.messages.concat(data)
+          this.setState({messages: messages});
+          break;
+        case "incomingUser":
+        if (!this.state.color) {
+          this.setState({color: data.color});
+        }
+        this.setState({usersLoggedIn: data.length});
+        break;
+        default:
+          // show an error in the console if the message type is unknown
+          throw new Error("Unknown event type " + data.type);
+      }
 
 
-    setTimeout(() => {
-      console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
-      const newMessage = {id: 3, type: "incomingMessage", username: "Michelle", content: "Hello there!"};
-      const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
+    };
   }
 
   render() {
     return (
     <div>
-      <Nav />
-      <Main Messages={this.state.messages}/>
-      <ChatBar User={this.state.currentUser.name} getMessage={this.newMessage} getUser={this.newUser}/>
+      <Nav usersLoggedIn={this.state.usersLoggedIn}/>
+      <Main Messages={this.state.messages} color={this.state.color}/>
+      <ChatBar User={this.state.currentUser.name} submitMessage={this.submitMessage} submitNewUser={this.submitNewUser} />
     </div>
     );
   }

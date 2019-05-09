@@ -4,7 +4,7 @@ import MessageList from './MessageList.jsx';
 class Main extends Component {
   render() {
     return (
-      <MessageList messages={this.props.Messages}/>
+      <MessageList messages={this.props.Messages} />
     );
   }
 }
