@@ -7,7 +7,7 @@ function Nav(props) {
       <div>
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
-          <p>{props.usersLoggedIn} users online</p>
+          <p className="navbar-count">{props.usersLoggedIn} users online</p>
         </nav>
       </div>
       );

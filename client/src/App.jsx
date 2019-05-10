@@ -24,13 +24,13 @@ class App extends Component {
     this.socket.send(JSON.stringify(obj));
   }
 
-  //assemble a message object, call sendtoServer to send message to server
+  //create a message object, send message from chatbar to server
   submitMessage(message) {
     let new_obj = {username: this.state.currentUser.name, content: message, color: this.state.color};
     this.sendToServer(new_obj);
   }
 
-  //update state to reflect a username change
+  //update username state and send chatbar user chnage to server
   submitNewUser(user, callback) {
     let new_user_update = {"content": `${this.state.currentUser.name} has changed their name to ${user}.`};
     this.setState({currentUser: {name: user}}, callback);
@@ -41,10 +41,11 @@ class App extends Component {
   componentDidMount() {
     console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://localhost:3001/");
-
+    //recieve message form server
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       switch(data.type) {
+        //update messages
         case "incomingMessage":
 
         case "incomingNotification":
@@ -53,9 +54,11 @@ class App extends Component {
           this.setState({messages: messages});
           break;
         case "incomingUser":
+        //update color
         if (!this.state.color) {
           this.setState({color: data.color});
         }
+        //update numebr of users
         this.setState({usersLoggedIn: data.length});
         break;
         default:

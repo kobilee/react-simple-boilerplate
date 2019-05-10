@@ -7,6 +7,7 @@ class ChatBar extends Component {
   }
 
   _sendChat = e => {
+    //submit a message app.jsx
     if(e.key === "Enter" && e.target.value !== ""){
         const newMessage = e.target.value;
         e.target.value = "";
@@ -19,7 +20,7 @@ class ChatBar extends Component {
   };
 
   _userSubmit = e => {
-    //submit a new username to server
+    //submit a new username to app.jsx
     if (e.key === "Enter" && e.target.value !== "" && this.props.User !== this.state.user) {
       let newUser = e.target.value;
       console.log(newUser);
@@ -28,8 +29,8 @@ class ChatBar extends Component {
   };
 
   _updateUser = e => {
+    //updates user
     this.setState({user: e.target.value});
-    console.log("test");
   };
 
 

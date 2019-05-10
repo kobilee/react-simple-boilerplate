@@ -17,8 +17,8 @@ class Message extends Component {
       );
     } else {
       return (
-       <div className="notification">
-          <span className="notification-content">{this.props.message.content}</span>
+       <div className="message system">
+          {this.props.message.content}
         </div>
       );
     }
